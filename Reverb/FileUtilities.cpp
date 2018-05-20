@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-int16_t ReadS16(std::ifstream& file)
+int16_t readS16(std::ifstream& file)
 {
 	int16_t value{0};
 	uint8_t bytes[2]{0};
@@ -11,7 +11,7 @@ int16_t ReadS16(std::ifstream& file)
 	return value;
 }
 
-void WriteS16(std::ofstream& file, int16_t value)
+void writeS16(std::ofstream& file, int16_t value)
 {
 	uint8_t bytes[2]{0};
 
@@ -22,7 +22,7 @@ void WriteS16(std::ofstream& file, int16_t value)
 	file.write(reinterpret_cast<char*>(bytes), 2);
 }
 
-WaveFile* ReadFile(const char* filename)
+WaveFile* readFile(const char* filename)
 {
 	std::ifstream fs;
 	auto* wave = new WaveFile;
@@ -52,7 +52,7 @@ WaveFile* ReadFile(const char* filename)
 		while (sample < wave->header.Subchunk2Size/2)
 		{
 			fs.seekg(sizeof(WaveHeader)+(sample*2));
-			data->push_back(ReadS16(fs));
+			data->push_back(readS16(fs));
 			sample++;
 		}
 		wave->data = data;
@@ -68,7 +68,7 @@ WaveFile* ReadFile(const char* filename)
 	return wave;
 }
 
-void WriteFile(const char* filename, WaveFile* wave)
+void writeFile(const char* filename, WaveFile* wave)
 {
 	std::ofstream fs;
 	fs.open(filename, std::ios_base::binary);
@@ -93,7 +93,7 @@ void WriteFile(const char* filename, WaveFile* wave)
 			auto* data = (std::vector<int16_t>*)wave->data;
 			while (sample < wave->header.Subchunk2Size / 2)
 			{
-				WriteS16(fs, (*data)[sample]);
+				writeS16(fs, (*data)[sample]);
 				sample++;
 			}
 			break;

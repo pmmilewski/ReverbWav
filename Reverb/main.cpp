@@ -1,15 +1,43 @@
 // Building reverb project from scratch. Will be working on .wav files for now.
 
 #include <iostream>
+#include <chrono>
+#include <cstdint>
 #include "FileUtilities.h"
+#include "BasicAudioBlocks.h"
 
 int main()
 {
-	std::cout << sizeof(WaveHeader) << std::endl;
-	WaveFile *wave = ReadFile("singing.wav");	
-	WriteFile("out.wav", wave);
 
-	std::cout << wave->header.Subchunk2Size << std::endl;
+	WaveFile *wave = readFile("singing.wav");
+	///	
+	
+	auto start = std::chrono::system_clock::now();
+	switch (wave->header.BitsPerSample/8)
+	{
+		case 1:
+		{
+			DelayBlock<uint8_t> Delay(static_cast<int>(wave->header.SampleRate/5));
+			break;
+		}
+		case 2:
+		{
+			DelayBlock<int16_t> Delay(static_cast<int>(wave->header.SampleRate/2));
+			std::vector<int16_t> *data = static_cast<std::vector<int16_t>*>(wave->data);
+			for (auto &sample: (*data))
+			{
+				sample += Delay.process(sample);
+			}
+			break;
+		}
+		default:
+			break;
+	}
+	auto end = std::chrono::system_clock::now();
+	std::chrono::duration<double> elapsed_seconds = end-start;
+	///
+	writeFile("delayed.wav", wave);
+	std::cout << "Finished! Time elapsed: " << elapsed_seconds.count() << std::endl;
 	std::getchar();
 
 	return 0;

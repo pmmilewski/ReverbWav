@@ -25,7 +25,7 @@ struct WaveFile
 	void* data;
 };
 
-int16_t ReadS16(std::ifstream&);
-void WriteS16(std::ofstream&, int16_t);
-WaveFile* ReadFile(const char*);
-void WriteFile(const char*, WaveFile*);
+int16_t readS16(std::ifstream&);
+void writeS16(std::ofstream&, int16_t);
+WaveFile* readFile(const char*);
+void writeFile(const char*, WaveFile*);
