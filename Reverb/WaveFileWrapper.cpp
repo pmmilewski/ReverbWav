@@ -39,9 +39,20 @@ WaveFileWrapper::WaveFileWrapper(const char* filename)
     readFile(filename);
     // Need to consider additional init operations
     number_of_channels = static_cast<int>(wave->header.NumChannels);
+    block_align = static_cast<int>(wave->header.BlockAlign);
 }
 
 WaveFileWrapper::finishWork(const char* filename)
 {
     writeFile(filename);
 }
+
+SoundData WaveFileWrapper::getSoundData()
+{
+    
+}
+
+void WaveFileWrapper::loadSoudData()
+{
+}
+

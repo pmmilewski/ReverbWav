@@ -1,11 +1,23 @@
 #include "FileUtilities.h"
 #include <iostream>
 
+struct SoundData
+{
+    int number_of_channels;
+    int sample_rate;
+    std::vector<double> left_channel;
+    std::vector<double> right_channel;
+    
+};
+
 class WaveFileWrapper
 {
 public:
     WaveFileWrapper(const char* filename);
-    finishWork(const char*);
+    void finishWork(const char*);
+    
+    SoundData getSoundData();
+    void loadSoudData();
     
 private:
     struct WaveHeader
