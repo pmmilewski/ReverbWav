@@ -38,7 +38,7 @@ int main()
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end-start;
 	///
-	wav.writeFile("out.wav");
+	wav.finishWork("out.wav");
 	std::cout << "Finished! Time elapsed: " << elapsed_seconds.count() << std::endl;
 	std::getchar();
 

@@ -5,7 +5,7 @@ class WaveFileWrapper
 {
 public:
     WaveFileWrapper(const char* filename);
-    void writeFile(const char*);
+    finishWork(const char*);
     
 private:
     struct WaveHeader
@@ -33,6 +33,7 @@ private:
     
     WaveFile* wave;
     
+    void writeFile(const char*);
     void readFile(const char*);
 
     #include "WaveFileWrapper.inl"

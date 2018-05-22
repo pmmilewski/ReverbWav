@@ -40,3 +40,7 @@ WaveFileWrapper::WaveFileWrapper(const char* filename)
     readFile(filename);
     // Need to consider additional init operations
 }
+WaveFileWrapper::finishWork(const char* filename)
+{
+    writeFile(filename);
+}
