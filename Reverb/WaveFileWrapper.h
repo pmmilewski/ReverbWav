@@ -32,6 +32,9 @@ private:
     };
     
     WaveFile* wave;
+    int block_align;
+    int number_of_channels;
+    int bps;
     
     void writeFile(const char*);
     void readFile(const char*);
