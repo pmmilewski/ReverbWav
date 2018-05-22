@@ -22,86 +22,24 @@ void writeS16(std::ofstream& file, int16_t value)
 	file.write(reinterpret_cast<char*>(bytes), 2);
 }
 
-WaveFile* readFile(const char* filename)
+int32_t readS32(std::ifstream& file)
 {
-	std::ifstream fs;
-	auto* wave = new WaveFile;
-	fs.open(filename, std::ios_base::binary);
-	fs.get(reinterpret_cast<char*>(&wave->header), sizeof(WaveHeader));
-	switch (wave->header.BitsPerSample/8)
-	{
-	case 1:
-	{
-		uint8_t byte;
-		auto *data = new std::vector<uint8_t>(0);
-		auto sample{0};
-		while (sample < wave->header.Subchunk2Size)
-		{
-			fs.seekg(sizeof(WaveHeader)+sample);
-			fs.read(reinterpret_cast<char*>(&byte), 1);
-			data->push_back(byte);
-			sample++;
-		}
-		wave->data = data;
-		break;
-	}
-	case 2:
-	{
-		auto *data = new std::vector<int16_t>(0);
-		auto sample{0};
-		while (sample < wave->header.Subchunk2Size/2)
-		{
-			fs.seekg(sizeof(WaveHeader)+(sample*2));
-			data->push_back(readS16(fs));
-			sample++;
-		}
-		wave->data = data;
-		break;
-	}
-	default:
-	{
-		std::cout << "Something is wrong with header.";
-		break;
-	}
-	}
-	fs.close();
-	return wave;
+	int32_t value{0};
+	uint8_t bytes[4]{0};
+	file.read(reinterpret_cast<char*>(bytes), 4);
+	value = bytes[3] | (bytes[2] << 8) | (bytes[1] << 16) | (bytes[0] << 24);
+	return value;
 }
 
-void writeFile(const char* filename, WaveFile* wave)
+void writeS32(std::ofstream& file, int32_t value)
 {
-	std::ofstream fs;
-	fs.open(filename, std::ios_base::binary);
-	fs.write((char*)wave, sizeof(WaveHeader));
-	
-	
-	auto sample{ 0 };
-	switch (wave->header.BitsPerSample/8)
-	{
-		case 1:
-		{
-			auto* data = (std::vector<uint8_t>*)wave->data;
-			while (sample < wave->header.Subchunk2Size)
-			{
-				fs.write(reinterpret_cast<char*>(&(*data)[sample]), 1);
-				sample++;
-			}
-			break;
-		}
-		case 2:
-		{
-			auto* data = (std::vector<int16_t>*)wave->data;
-			while (sample < wave->header.Subchunk2Size / 2)
-			{
-				writeS16(fs, (*data)[sample]);
-				sample++;
-			}
-			break;
-		}
-		default:
-			break;
-	}
+	uint8_t bytes[4]{0};
 
-	
-	fs.close();
+	// extracting the individual bytes from value
+    bytes[3] = (value) & 0xFF; //low
+    bytes[2] = (value >> 8) & 0xFF; //low
+	bytes[1] = (value >> 16) & 0xFF; //low
+	bytes[0] = (value >> 24) & 0xFF; // high
+
+	file.write(reinterpret_cast<char*>(bytes), 4);
 }

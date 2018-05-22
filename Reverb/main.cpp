@@ -3,17 +3,18 @@
 #include <iostream>
 #include <chrono>
 #include <cstdint>
-#include "FileUtilities.h"
+#include "WaveFileWrapper.h"
 #include "BasicAudioBlocks.h"
 
 int main()
 {
-
-	WaveFile *wave = readFile("singing.wav");
+    
+	//WaveFile *wave = readFile("singing.wav");
+    WaveFileWrapper wav = WaveFileWrapper("tone.wav");
 	///	
 	
 	auto start = std::chrono::system_clock::now();
-	switch (wave->header.BitsPerSample/8)
+	/*switch (wave->header.BitsPerSample/8)
 	{
 		case 1:
 		{
@@ -33,11 +34,11 @@ int main()
 		}
 		default:
 			break;
-	}
+	}*/
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end-start;
 	///
-	writeFile("delayed.wav", wave);
+	wav.writeFile("out.wav");
 	std::cout << "Finished! Time elapsed: " << elapsed_seconds.count() << std::endl;
 	std::getchar();
 
