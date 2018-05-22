@@ -22,7 +22,8 @@ int main()
 		}
 		case 2:
 		{
-			DelayBlock<int16_t> Delay(static_cast<int>(wave->header.SampleRate/2));
+            addSamples<int16_t>(*wave, 2*static_cast<int>(wave->header.SampleRate));
+			DelayBlock<int16_t> Delay(static_cast<int>(wave->header.SampleRate));
 			std::vector<int16_t> *data = static_cast<std::vector<int16_t>*>(wave->data);
 			for (auto &sample: (*data))
 			{

@@ -1,6 +1,7 @@
 #pragma once
 #include <cstdint>
 #include <fstream>
+#include <vector>
 
 struct WaveHeader
 {
@@ -29,3 +30,12 @@ int16_t readS16(std::ifstream&);
 void writeS16(std::ofstream&, int16_t);
 WaveFile* readFile(const char*);
 void writeFile(const char*, WaveFile*);
+
+// Sample number manipulation
+template <typename T>
+void addSamples(WaveFile &wave, const int &n)
+{
+    auto new_size = wave.header.Subchunk2Size += n*sizeof(T);
+    std::vector<T> *data = static_cast<std::vector<T>*>(wave.data);
+    data->resize(new_size);
+}
