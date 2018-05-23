@@ -15,6 +15,12 @@ int main()
 	auto start = std::chrono::system_clock::now();
     SoundData *samples = wav.getSoundData();
     
+    for(auto& sample: samples->left_channel)
+    {
+        sample = sample * 0.1;
+    }
+    
+    wav.loadSoudData(*samples);
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end-start;
 	///

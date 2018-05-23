@@ -95,7 +95,48 @@ SoundData* WaveFileWrapper::getSoundData()
         
 }
 
-void WaveFileWrapper::loadSoudData(const SoundData&)
+void WaveFileWrapper::loadSoudData(const SoundData& sdata)
 {
+    switch(number_of_channels)
+    {
+        case 1:
+        {
+            if(bps == 8)
+            {
+                auto* data = (std::vector<uint8_t>*)wave->data;
+                delete data;
+                data = new std::vector<uint8_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+            }
+            if(bps == 16)
+            {
+                auto* data = (std::vector<int16_t>*)wave->data;
+                delete data;
+                data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                //sdata->left_channel = std::vector<double>(data->begin(), data->end());
+            }
+            if(bps == 24)
+            {
+                //TODO
+            }
+            if(bps == 32)
+            {
+                auto* data = (std::vector<int32_t>*)wave->data;
+                delete data;
+                data = new std::vector<int32_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                //sdata->left_channel = std::vector<double>(data->begin(), data->end());
+            }
+            break;
+        }
+        case 2:
+        {
+            //TODO
+            std::cout << "Not yet implemented - getSound stereo" << std::endl;
+            break;
+        }
+        default:
+        {
+            std::cout << "Something is not right with number of channels in getSoundData()" << std::endl;
+        }
+    }
 }
 
