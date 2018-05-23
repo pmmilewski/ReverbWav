@@ -16,8 +16,8 @@ public:
     WaveFileWrapper(const char* filename);
     void finishWork(const char*);
     
-    SoundData getSoundData();
-    void loadSoudData();
+    SoundData* getSoundData();
+    void loadSoudData(const SoundData&);
     
 private:
     struct WaveHeader
@@ -45,6 +45,7 @@ private:
     
     WaveFile* wave;
     int block_align;
+    int sample_rate;
     int number_of_channels;
     int bps;
     

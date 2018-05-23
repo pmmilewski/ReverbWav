@@ -40,19 +40,62 @@ WaveFileWrapper::WaveFileWrapper(const char* filename)
     // Need to consider additional init operations
     number_of_channels = static_cast<int>(wave->header.NumChannels);
     block_align = static_cast<int>(wave->header.BlockAlign);
+    sample_rate = static_cast<int>(wave->header.SampleRate);
 }
 
-WaveFileWrapper::finishWork(const char* filename)
+void WaveFileWrapper::finishWork(const char* filename)
 {
     writeFile(filename);
 }
 
-SoundData WaveFileWrapper::getSoundData()
+SoundData* WaveFileWrapper::getSoundData()
 {
+    SoundData *sdata = new SoundData{0};
+    sdata->number_of_channels = number_of_channels;
+    sdata->sample_rate = sample_rate;
     
+    switch(number_of_channels)
+    {
+        case 1:
+        {
+            if(bps == 8)
+            {
+                auto* data = (std::vector<uint8_t>*)wave->data;
+                sdata->left_channel = std::vector<double>(data->begin(), data->end());
+            }
+            if(bps == 16)
+            {
+                auto* data = (std::vector<int16_t>*)wave->data;
+                sdata->left_channel = std::vector<double>(data->begin(), data->end());
+            }
+            if(bps == 24)
+            {
+                //TODO
+            }
+            if(bps == 32)
+            {
+                auto* data = (std::vector<int32_t>*)wave->data;
+                sdata->left_channel = std::vector<double>(data->begin(), data->end());
+            }
+            break;
+        }
+        case 2:
+        {
+            //TODO
+            std::cout << "Not yet implemented - getSound stereo" << std::endl;
+            break;
+        }
+        default:
+        {
+            std::cout << "Something is not right with number of channels in getSoundData()" << std::endl;
+        }
+    }
+   
+    return sdata;
+        
 }
 
-void WaveFileWrapper::loadSoudData()
+void WaveFileWrapper::loadSoudData(const SoundData&)
 {
 }
 
