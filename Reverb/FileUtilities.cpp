@@ -7,7 +7,7 @@ int16_t readS16(std::ifstream& file)
 	int16_t value{0};
 	uint8_t bytes[2]{0};
 	file.read(reinterpret_cast<char*>(bytes), 2);
-	value = bytes[1] | (bytes[0] << 8);
+	value = bytes[0] | (bytes[1] << 8);
 	return value;
 }
 
@@ -16,8 +16,8 @@ void writeS16(std::ofstream& file, int16_t value)
 	uint8_t bytes[2]{0};
 
 	// extracting the individual bytes from value
-	bytes[1] = (value) & 0xFF; //low
-	bytes[0] = (value >> 8) & 0xFF; // high
+	bytes[0] = (value) & 0xFF; //low
+	bytes[1] = (value >> 8) & 0xFF; // high
 
 	file.write(reinterpret_cast<char*>(bytes), 2);
 }

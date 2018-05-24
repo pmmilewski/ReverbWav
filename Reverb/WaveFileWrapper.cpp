@@ -1,4 +1,6 @@
 #include "WaveFileWrapper.h"
+#include <bitset>
+#include <cmath>
 
 void WaveFileWrapper::readFile(const char* filename)
 {
@@ -112,7 +114,6 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
                 auto* data = (std::vector<int16_t>*)wave->data;
                 delete data;
                 data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
-                //sdata->left_channel = std::vector<double>(data->begin(), data->end());
             }
             if(bps == 24)
             {
@@ -123,7 +124,6 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
                 auto* data = (std::vector<int32_t>*)wave->data;
                 delete data;
                 data = new std::vector<int32_t>(sdata.left_channel.begin(), sdata.left_channel.end());
-                //sdata->left_channel = std::vector<double>(data->begin(), data->end());
             }
             break;
         }

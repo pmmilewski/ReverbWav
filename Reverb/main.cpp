@@ -17,7 +17,7 @@ int main()
     
     for(auto& sample: samples->left_channel)
     {
-        sample = sample * 0.1;
+        sample = sample * 0.5;
     }
     
     wav.loadSoudData(*samples);
