@@ -16,5 +16,6 @@ double DelayBlock::process(const double &sample)
 	double output{(*buffer)[delay_samples-1]};
 	buffer->pop_back();
 	buffer->insert(buffer->begin(), sample);
+    previous_output = output;
 	return output;
 }
