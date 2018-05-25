@@ -4,22 +4,22 @@
 #include <chrono>
 #include <cstdint>
 #include "WaveFileWrapper.h"
-#include "DelayBlock.h"
+#include "CombReverbBlock.h"
+#include "AllpassReverbBlock.h"
 
 int main()
 {
     
-    WaveFileWrapper wav = WaveFileWrapper("tone.wav");
+    WaveFileWrapper wav = WaveFileWrapper("gunshot.wav");
 	///	
 	
 	auto start = std::chrono::system_clock::now();
     SoundData *samples = wav.getSoundData();
-    DelayBlock DL(40000);
+    AllpassReverbBlock AP(samples->sample_rate/100, 0.7);
     
     for(auto& sample: samples->left_channel)
     {
-        sample += DL.process(sample);
-        sample /= 2.0;
+        sample += AP.process(sample);
     }
     
     wav.loadSoudData(*samples);
