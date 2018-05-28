@@ -17,7 +17,7 @@ int main()
 	
 	auto start = std::chrono::system_clock::now();
     SoundData *samples = wav.getSoundData();
-    DelayBlock AP(samples->sample_rate/10);
+    AllpassReverbSeries AP(samples->sample_rate/10, 0.7, 5);
     
     for(auto& sample: samples->left_channel)
     {

@@ -20,7 +20,7 @@ CombReverbBlock::~CombReverbBlock()
 double CombReverbBlock::process(const double &input_sample)
 {
     double output;
-    output = input_sample + delay->process(input_sample+delay->previous_output)*loop_gain;
+    output = delay->process(input_sample+(delay->previous_output*loop_gain));
     return output;
 }
 
