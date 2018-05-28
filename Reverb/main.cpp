@@ -5,17 +5,19 @@
 #include <cstdint>
 #include "WaveFileWrapper.h"
 #include "CombReverbBlock.h"
+#include "DelayBlock.h"
 #include "AllpassReverbBlock.h"
+#include "AllpassReverbSeries.h"
 
 int main()
 {
     
-    WaveFileWrapper wav = WaveFileWrapper("gunshot.wav");
+    WaveFileWrapper wav = WaveFileWrapper("singing.wav");
 	///	
 	
 	auto start = std::chrono::system_clock::now();
     SoundData *samples = wav.getSoundData();
-    AllpassReverbBlock AP(samples->sample_rate/100, 0.7);
+    DelayBlock AP(samples->sample_rate/10);
     
     for(auto& sample: samples->left_channel)
     {
