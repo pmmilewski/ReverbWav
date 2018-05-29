@@ -24,16 +24,13 @@ double AllpassReverbSeries::process(const double& input_sample)
 AllpassReverbSeries::AllpassReverbSeries(const int& initial_delay, const double& gain, const int& number_of_blocks)
 {
     blocks = new std::vector<AllpassReverbBlock>;
-    int fib1{1}, fib2{1}, fib3{fib1+fib2};
     int current_delay{initial_delay};
-    
+    int divider{1};
     for(size_t i=0; i < number_of_blocks; i++)
     {
-        current_delay = initial_delay/fib3;
+        current_delay = initial_delay/divider;
         blocks->push_back(AllpassReverbBlock(current_delay, gain));
-        fib1 = fib2;
-        fib2 = fib3;
-        fib3 = fib1 + fib2;
+        divider *= 3;
     }
 }
 
