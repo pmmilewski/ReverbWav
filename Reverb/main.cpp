@@ -8,6 +8,7 @@
 #include "DelayBlock.h"
 #include "AllpassReverbBlock.h"
 #include "AllpassReverbSeries.h"
+#include "VariableRatioAllpassReverb.h"
 
 int main()
 {
@@ -17,11 +18,11 @@ int main()
 	
 	auto start = std::chrono::system_clock::now();
     SoundData *samples = wav.getSoundData();
-    AllpassReverbSeries AP(samples->sample_rate/10, 0.7, 5);
+    VariableRatioAllpassReverb VAP(samples->sample_rate/2, samples->sample_rate/4, 0.1);
     
     for(auto& sample: samples->left_channel)
     {
-        sample += AP.process(sample);
+        sample += VAP.process(sample);
     }
     
     wav.loadSoudData(*samples);

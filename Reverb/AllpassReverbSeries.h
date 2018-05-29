@@ -7,11 +7,12 @@ class AllpassReverbSeries
 private:
     std::vector<AllpassReverbBlock>* blocks;
     
-    
 public:
     AllpassReverbSeries();
     AllpassReverbSeries(const int&, const double&, const int&);
     ~AllpassReverbSeries();
+    
+    double previous_output;
     
     double process(const double&);
 };
