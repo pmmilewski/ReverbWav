@@ -55,6 +55,7 @@ SoundData* WaveFileWrapper::getSoundData()
     SoundData *sdata = new SoundData{0};
     sdata->number_of_channels = number_of_channels;
     sdata->sample_rate = sample_rate;
+    sdata->bitrate = bps;
     
     switch(number_of_channels)
     {
@@ -106,23 +107,32 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
             if(bps == 8)
             {
                 auto* data = (std::vector<uint8_t>*)wave->data;
-                delete data;
+                if(data != nullptr)
+                {
+                    delete data;
+                }
                 data = new std::vector<uint8_t>(sdata.left_channel.begin(), sdata.left_channel.end());
             }
             if(bps == 16)
             {
                 auto* data = (std::vector<int16_t>*)wave->data;
-                delete data;
+                if(data != nullptr)
+                {
+                    delete data;
+                }
                 data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
             }
             if(bps == 24)
             {
                 //TODO
             }
-            if(bps == 32)
+            if(bps == 32);
             {
                 auto* data = (std::vector<int32_t>*)wave->data;
-                delete data;
+                if(data != nullptr)
+                {
+                    delete data;
+                }
                 data = new std::vector<int32_t>(sdata.left_channel.begin(), sdata.left_channel.end());
             }
             break;
@@ -139,4 +149,41 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
         }
     }
 }
-
+WaveFileWrapper::WaveFileWrapper(const SoundData& sdata)
+{
+    wave = new WaveFile;
+    
+    sample_rate = sdata.sample_rate;
+    number_of_channels = sdata.number_of_channels;
+    bps = sdata.bitrate;
+    block_align = number_of_channels * bps/8;
+    
+    wave->header.ChunkID[0] = 'R';
+    wave->header.ChunkID[1] = 'I';
+    wave->header.ChunkID[2] = 'F';
+    wave->header.ChunkID[3] = 'F';
+    wave->header.Format[0] = 'W';
+    wave->header.Format[1] = 'A';
+    wave->header.Format[2] = 'V';
+    wave->header.Format[3] = 'E';
+    wave->header.Subchunk1ID[0] = 'f';
+    wave->header.Subchunk1ID[1] = 'm';
+    wave->header.Subchunk1ID[2] = 't';
+    wave->header.Subchunk1Size = 16; 
+    wave->header.AudioFormat = 1; 
+    wave->header.NumChannels = sdata.number_of_channels; 
+    wave->header.SampleRate = sdata.sample_rate;
+    wave->header.BlockAlign = wave->header.NumChannels * wave->header.BitsPerSample/8;
+    wave->header.BitsPerSample = sdata.bitrate;
+    wave->header.ByteRate = wave->header.SampleRate * wave->header.NumChannels * wave->header.BitsPerSample/8;
+    wave->header.Subchunk2ID[0] = 'd';
+    wave->header.Subchunk2ID[1] = 'a';
+    wave->header.Subchunk2ID[2] = 't';
+    wave->header.Subchunk2ID[3] = 'a';
+    wave->header.Subchunk2Size = sdata.left_channel.size()*(sdata.bitrate/8);
+    wave->header.ChunkSize = 4 + (8 + wave->header.Subchunk1Size) + (8 + wave->header.Subchunk2Size);
+    
+    wave->data = new std::vector<int16_t>{0};
+    
+    loadSoudData(sdata);
+}
