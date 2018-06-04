@@ -29,8 +29,15 @@ int main()
     
     wav.loadSoudData(*samples);*/
     ///
-    SoundData* impulse = createImpulseSD();
-    WaveFileWrapper wav = WaveFileWrapper(*impulse);
+    SoundData* samples = createImpulseSD();
+    
+    VariableRatioAllpassReverb VAP(samples->sample_rate/5, samples->sample_rate/5, 0.7);
+    
+    for(auto& sample: samples->left_channel)
+    {
+        sample += VAP.process(sample);
+    }
+    WaveFileWrapper wav = WaveFileWrapper(*samples);
     wav.finishWork("imp_out.wav");
     ///
 	auto end = std::chrono::system_clock::now();

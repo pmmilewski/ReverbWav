@@ -2,6 +2,7 @@
 #include <bitset>
 #include <cmath>
 
+
 void WaveFileWrapper::readFile(const char* filename)
 {
 	std::ifstream fs;
@@ -169,12 +170,13 @@ WaveFileWrapper::WaveFileWrapper(const SoundData& sdata)
     wave->header.Subchunk1ID[0] = 'f';
     wave->header.Subchunk1ID[1] = 'm';
     wave->header.Subchunk1ID[2] = 't';
+    wave->header.Subchunk1ID[3] = ' ';
     wave->header.Subchunk1Size = 16; 
     wave->header.AudioFormat = 1; 
     wave->header.NumChannels = sdata.number_of_channels; 
     wave->header.SampleRate = sdata.sample_rate;
-    wave->header.BlockAlign = wave->header.NumChannels * wave->header.BitsPerSample/8;
     wave->header.BitsPerSample = sdata.bitrate;
+    wave->header.BlockAlign = wave->header.NumChannels * wave->header.BitsPerSample/8;
     wave->header.ByteRate = wave->header.SampleRate * wave->header.NumChannels * wave->header.BitsPerSample/8;
     wave->header.Subchunk2ID[0] = 'd';
     wave->header.Subchunk2ID[1] = 'a';
@@ -183,7 +185,6 @@ WaveFileWrapper::WaveFileWrapper(const SoundData& sdata)
     wave->header.Subchunk2Size = sdata.left_channel.size()*(sdata.bitrate/8);
     wave->header.ChunkSize = 4 + (8 + wave->header.Subchunk1Size) + (8 + wave->header.Subchunk2Size);
     
-    wave->data = new std::vector<int16_t>{0};
+    wave->data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
     
-    loadSoudData(sdata);
 }
