@@ -32,7 +32,7 @@ AllpassReverbSeries::AllpassReverbSeries(const int& initial_delay, const double&
     {
         current_delay = initial_delay/divider;
         blocks->push_back(AllpassReverbBlock(current_delay, gain));
-        switch(addition)
+       /* switch(addition)
         {
             case 0:
                 addition = 2; 
@@ -44,7 +44,8 @@ AllpassReverbSeries::AllpassReverbSeries(const int& initial_delay, const double&
                 addition = 0;
                 break;
         }
-        divider *= (3+addition);
+        divider *= (3+addition);*/
+        divider *= 3;
     }
 }
 

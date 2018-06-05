@@ -31,11 +31,11 @@ int main()
     ///
     SoundData* samples = createImpulseSD();
     
-    VariableRatioAllpassReverb VAP(samples->sample_rate/5, samples->sample_rate/5, 0.7);
+    AllpassReverbSeries APS(samples->sample_rate/10, 0.7, 5);
     
     for(auto& sample: samples->left_channel)
     {
-        sample += VAP.process(sample);
+        sample += APS.process(sample);
     }
     WaveFileWrapper wav = WaveFileWrapper(*samples);
     wav.finishWork("imp_out.wav");
