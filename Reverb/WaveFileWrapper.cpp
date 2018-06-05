@@ -127,7 +127,7 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
             {
                 //TODO
             }
-            if(bps == 32);
+            if(bps == 32)
             {
                 auto* data = (std::vector<int32_t>*)wave->data;
                 if(data != nullptr)

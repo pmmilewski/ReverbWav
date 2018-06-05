@@ -267,3 +267,4 @@ Reverb/.vscode/tasks.json
 Reverb/ Reverb.exe
 Reverb/Reverb.exe
 Reverb/.vscode/launch.json
+Reverb/fft_out.wav

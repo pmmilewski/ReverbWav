@@ -15,22 +15,30 @@
 int main()
 {
     
-    //WaveFileWrapper wav = WaveFileWrapper("singing.wav");
+    WaveFileWrapper wav = WaveFileWrapper("singing.wav");
 	///	
 	
 	auto start = std::chrono::system_clock::now();
-    /*SoundData *samples = wav.getSoundData();
-    VariableRatioAllpassReverb VAP(samples->sample_rate/5, samples->sample_rate/20, 0.1);
+    SoundData *samples = wav.getSoundData();
     
-    for(auto& sample: samples->left_channel)
+    //wav.loadSoudData(*samples);
+    //SoundData* samples = createImpulseSD();
+    CArray* fft_result = getCArrayFromSoundDataChannel(samples, 0);
+
+    fft(*fft_result);
+    
+    for(size_t i = 0; i < 15; i++)
     {
-        sample += VAP.process(sample);
+        std::cout << (*fft_result)[i] << std::endl;
     }
     
-    wav.loadSoudData(*samples);*/
-    ///
-    SoundData* samples = createImpulseSD();
-    
+    ifft(*fft_result);
+    for(size_t i = 0; i < 15; i++)
+    {
+        std::cout << (*fft_result)[i] << std::endl;
+    }
+    setChannelFromCArray(samples, fft_result, 0);
+    /*
     AllpassReverbSeries APS(samples->sample_rate/10, 0.7, 5);
     
     for(auto& sample: samples->left_channel)
@@ -38,7 +46,9 @@ int main()
         sample += APS.process(sample);
     }
     WaveFileWrapper wav = WaveFileWrapper(*samples);
-    wav.finishWork("imp_out.wav");
+    */
+    wav.loadSoudData(*samples);
+    wav.finishWork("fft_out.wav");
     ///
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end-start;
