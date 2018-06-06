@@ -107,21 +107,13 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
         {
             if(bps == 8)
             {
-                auto* data = (std::vector<uint8_t>*)wave->data;
-                if(data != nullptr)
-                {
-                    delete data;
-                }
-                data = new std::vector<uint8_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+               delete static_cast<std::vector<uint8_t>*>(wave->data);
+               wave->data = new std::vector<uint8_t>(sdata.left_channel.begin(), sdata.left_channel.end());
             }
             if(bps == 16)
             {
-                auto* data = (std::vector<int16_t>*)wave->data;
-                if(data != nullptr)
-                {
-                    delete data;
-                }
-                data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                delete static_cast<std::vector<int16_t>*>(wave->data);
+                wave->data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
             }
             if(bps == 24)
             {
@@ -129,12 +121,8 @@ void WaveFileWrapper::loadSoudData(const SoundData& sdata)
             }
             if(bps == 32)
             {
-                auto* data = (std::vector<int32_t>*)wave->data;
-                if(data != nullptr)
-                {
-                    delete data;
-                }
-                data = new std::vector<int32_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                delete static_cast<std::vector<int32_t>*>(wave->data);
+                wave->data = new std::vector<int32_t>(sdata.left_channel.begin(), sdata.left_channel.end());
             }
             break;
         }
