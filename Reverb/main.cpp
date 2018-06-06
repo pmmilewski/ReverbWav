@@ -23,8 +23,11 @@ int main()
     
     //wav.loadSoudData(*samples);
     //SoundData* samples = createImpulseSD();
-    /* CArray *fft_result = getCArrayFromSoundDataChannel(samples, 0);
+    int initial_size = samples->left_channel.size();
+    int closest_2power = static_cast<int>(std::log2(samples->left_channel.size()))+1;
+    samples->left_channel.resize(static_cast<int>(pow(2,closest_2power)), 0);
 
+    CArray *fft_result = getCArrayFromSoundDataChannel(samples, 0);
     fft(*fft_result);
 
     for (size_t i = 0; i < 15; i++)
@@ -36,8 +39,9 @@ int main()
     for (size_t i = 0; i < 15; i++)
     {
         std::cout << (*fft_result)[i] << std::endl;
-    } */
-    //setChannelFromCArray(samples, fft_result, 0);
+    } 
+    setChannelFromCArray(samples, fft_result, 0);
+    samples->left_channel.resize(static_cast<int>(initial_size));
     /*
     AllpassReverbSeries APS(samples->sample_rate/10, 0.7, 5);
     
@@ -48,11 +52,11 @@ int main()
     WaveFileWrapper wav = WaveFileWrapper(*samples);
     */
     wav.loadSoudData(*samples);
-    for(size_t i = 0; i < 10; i++)
+     for(size_t i = 0; i < 10; i++)
     {
         std::cout << samples->left_channel[i] << std::endl;
         std::cout << (*(std::vector<int16_t>*)(wav.wave->data))[i] << std::endl;
-    }
+    } 
     wav.finishWork("fft_out.wav");
     ///
 	auto end = std::chrono::system_clock::now();

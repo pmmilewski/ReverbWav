@@ -90,7 +90,7 @@ void setChannelFromCArray(SoundData* sdata, const CArray* complex_samples, int c
             size_t size = sdata->left_channel.size();
             for(size_t i = 0; i < size; i++)
             {
-                sdata->left_channel[i] = (*complex_samples)[i].real();
+                sdata->left_channel[i] = ((*complex_samples)[i]).real();
             }
             break;
         }
@@ -99,7 +99,7 @@ void setChannelFromCArray(SoundData* sdata, const CArray* complex_samples, int c
             size_t size = sdata->right_channel.size();
             for(size_t i = 0; i < size; i++)
             {
-                sdata->right_channel[i] = (*complex_samples)[i].real();
+                sdata->right_channel[i] = ((*complex_samples)[i]).real();
             }
             break;
         }
