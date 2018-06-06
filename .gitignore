@@ -259,6 +259,8 @@ paket-files/
 # Python Tools for Visual Studio (PTVS)
 __pycache__/
 *.pyc
+
+# Visual Studio Code files and outputs
 .vscode/tasks.json
 Reverb/ReverbWavVSC_WS.code-workspace
 Reverb/imp_out.wav
@@ -268,3 +270,5 @@ Reverb/ Reverb.exe
 Reverb/Reverb.exe
 Reverb/.vscode/launch.json
 Reverb/fft_out.wav
+Reverb/ReverbWavWS.code-workspace
+Reverb/reverb.out
