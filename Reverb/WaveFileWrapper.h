@@ -26,7 +26,7 @@ public:
     
     WaveFileWrapper constructWavFromSoundData(const SoundData&); 
     
-public: //should be private again
+private:
     struct WaveHeader
     {
         uint8_t ChunkID[4]; //big

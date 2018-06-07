@@ -4,11 +4,8 @@
 #include <chrono>
 #include <cstdint>
 #include "WaveFileWrapper.h"
-#include "CombReverbBlock.h"
-#include "DelayBlock.h"
-#include "AllpassReverbBlock.h"
 #include "AllpassReverbSeries.h"
-#include "VariableRatioAllpassReverb.h"
+#include "CombReverbParallel.h"
 
 #include "TestUtilities.h"
 
@@ -21,36 +18,25 @@ int main()
 	auto start = std::chrono::system_clock::now();
     SoundData *samples = wav.getSoundData();
     
-    //wav.loadSoudData(*samples);
-    //SoundData* samples = createImpulseSD();
-
-    CArray *fft_result = getCArrayFromSoundDataChannel(samples, 0);
-    
-    fft(*fft_result);
-    ifft(*fft_result);
-    
-    setChannelFromCArray(samples, fft_result, 0);
-    /*
-    AllpassReverbSeries APS(samples->sample_rate/10, 0.7, 5);
+    ///
+    CombReverbParallel blocks = CombReverbParallel();
+    int second = samples->sample_rate;
+    blocks.addBlock(second/2, 0.9);
+    blocks.addBlock(second/4, 0.7);
+    blocks.addBlock(second/8, 0.5);
+    blocks.addBlock(second/16, 0.3);
     
     for(auto& sample: samples->left_channel)
     {
-        sample += APS.process(sample);
+        sample = blocks.process(sample);
     }
-    WaveFileWrapper wav = WaveFileWrapper(*samples);
-    */
-    wav.loadSoudData(*samples);
-     for(size_t i = 0; i < 10; i++)
-    {
-        std::cout << samples->left_channel[i] << std::endl;
-        std::cout << (*(std::vector<int16_t>*)(wav.wave->data))[i] << std::endl;
-    } 
-    wav.finishWork("fft_out.wav");
+
     ///
+    wav.loadSoudData(*samples);
 	auto end = std::chrono::system_clock::now();
 	std::chrono::duration<double> elapsed_seconds = end-start;
 	///
-	//wav.finishWork("out.wav");
+	wav.finishWork("out.wav");
 	std::cout << "Finished! Time elapsed: " << elapsed_seconds.count() << std::endl;
 	std::getchar();
 
