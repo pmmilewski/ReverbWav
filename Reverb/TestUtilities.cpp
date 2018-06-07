@@ -11,6 +11,8 @@ SoundData* createImpulseSD()
     
     signal->left_channel.push_back(1);
     signal->left_channel.resize(signal->sample_rate*5, 0);
+
+    signal->initial_size = signal->left_channel.size();
     
     return signal;
 }
@@ -50,13 +52,16 @@ void ifft(CArray& x)
 CArray* getCArrayFromSoundDataChannel(const SoundData* sdata, int channel_number = 0)
 {
     CArray* complex_samples = nullptr;
+    ///
+    int closest_2power = static_cast<int>(std::log2(sdata->initial_size))+1;
+    size_t new_size = static_cast<int>(pow(2,closest_2power));
+    ///
     switch(channel_number)
     {
         case 0:
         {
-            size_t size = sdata->left_channel.size();
-            complex_samples = new CArray(size);
-            for(size_t i = 0; i < size; i++)
+            complex_samples = new CArray(Complex(0), new_size);
+            for(size_t i = 0; i < sdata->initial_size; i++)
             {
                 (*complex_samples)[i] = Complex(sdata->left_channel[i]);
             }
@@ -64,9 +69,8 @@ CArray* getCArrayFromSoundDataChannel(const SoundData* sdata, int channel_number
         }
         case 1:
         {
-            size_t size = sdata->right_channel.size();
-            complex_samples = new CArray(size);
-            for(size_t i = 0; i < size; i++)
+            complex_samples = new CArray(Complex(0), new_size);
+            for(size_t i = 0; i < sdata->initial_size; i++)
             {
                 (*complex_samples)[i] = Complex(sdata->right_channel[i]);
             }

@@ -23,25 +23,13 @@ int main()
     
     //wav.loadSoudData(*samples);
     //SoundData* samples = createImpulseSD();
-    int initial_size = samples->left_channel.size();
-    int closest_2power = static_cast<int>(std::log2(samples->left_channel.size()))+1;
-    samples->left_channel.resize(static_cast<int>(pow(2,closest_2power)), 0);
 
     CArray *fft_result = getCArrayFromSoundDataChannel(samples, 0);
+    
     fft(*fft_result);
-
-    for (size_t i = 0; i < 15; i++)
-    {
-        std::cout << (*fft_result)[i] << std::endl;
-    }
-
     ifft(*fft_result);
-    for (size_t i = 0; i < 15; i++)
-    {
-        std::cout << (*fft_result)[i] << std::endl;
-    } 
+    
     setChannelFromCArray(samples, fft_result, 0);
-    samples->left_channel.resize(static_cast<int>(initial_size));
     /*
     AllpassReverbSeries APS(samples->sample_rate/10, 0.7, 5);
     

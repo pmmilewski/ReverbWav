@@ -94,7 +94,7 @@ SoundData* WaveFileWrapper::getSoundData()
             std::cout << "Something is not right with number of channels in getSoundData()" << std::endl;
         }
     }
-   
+    sdata->initial_size = sdata->left_channel.size();
     return sdata;
         
 }

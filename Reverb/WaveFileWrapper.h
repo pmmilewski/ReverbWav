@@ -8,6 +8,7 @@ struct SoundData
     int number_of_channels;
     int sample_rate;
     int bitrate;
+    int initial_size;
     std::vector<double> left_channel;
     std::vector<double> right_channel;
     
