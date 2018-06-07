@@ -19,7 +19,7 @@ int main()
     SoundData *samples = wav.getSoundData();
     
     ///
-    CombReverbParallel blocks = CombReverbParallel();
+    AllpassReverbSeries blocks = AllpassReverbSeries();
     int second = samples->sample_rate;
     blocks.addBlock(second/2, 0.9);
     blocks.addBlock(second/4, 0.7);

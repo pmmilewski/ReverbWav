@@ -21,6 +21,7 @@ void CombReverbParallel::addBlock(const int& delay, const double& gain)
         blocks->push_back({CombReverbBlock(delay, gain)});
     }
 } 
+
 double CombReverbParallel::process(const double& input_sample)
 {
     double output{0};

@@ -9,9 +9,10 @@ private:
     
 public:
     AllpassReverbSeries();
-    AllpassReverbSeries(const int&, const double&, const int&);
+    //AllpassReverbSeries(const int&, const double&, const int&);
     ~AllpassReverbSeries();
     
+    void addBlock(const int&, const double&);
     double previous_output;
     
     double process(const double&);

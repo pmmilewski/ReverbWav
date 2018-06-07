@@ -3,13 +3,26 @@
 
 AllpassReverbSeries::AllpassReverbSeries()
 {
-    std::cout << "Don't use AllpassReverbSeries constructor! Set parameters" << std::endl;
+    blocks = nullptr;
+    previous_output = 0;
 }
 
 AllpassReverbSeries::~AllpassReverbSeries()
 {
-    
+    delete blocks;
 }
+
+void AllpassReverbSeries::addBlock(const int& delay, const double& gain)
+{
+    if(blocks == nullptr)
+    {
+        blocks = new std::vector<AllpassReverbBlock>({AllpassReverbBlock(delay, gain)});
+    }
+    else
+    {
+        blocks->push_back({AllpassReverbBlock(delay, gain)});
+    }
+} 
 
 double AllpassReverbSeries::process(const double& input_sample)
 {
@@ -22,7 +35,7 @@ double AllpassReverbSeries::process(const double& input_sample)
     return output;
 }
 
-AllpassReverbSeries::AllpassReverbSeries(const int& initial_delay, const double& gain, const int& number_of_blocks)
+/* AllpassReverbSeries::AllpassReverbSeries(const int& initial_delay, const double& gain, const int& number_of_blocks)
 {
     blocks = new std::vector<AllpassReverbBlock>;
     previous_output = 0;
@@ -32,20 +45,8 @@ AllpassReverbSeries::AllpassReverbSeries(const int& initial_delay, const double&
     {
         current_delay = initial_delay/divider;
         blocks->push_back(AllpassReverbBlock(current_delay, gain));
-       /* switch(addition)
-        {
-            case 0:
-                addition = 2; 
-                break;
-            case 2:
-                addition = 4;
-                break;
-            case 4:
-                addition = 0;
-                break;
-        }
-        divider *= (3+addition);*/
         divider *= 3;
     }
-}
+} 
+*/
 
