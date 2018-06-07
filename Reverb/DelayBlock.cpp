@@ -4,6 +4,9 @@
 DelayBlock::DelayBlock(const int &number_of_samples)
 {	
 	delay_samples = number_of_samples;
+	current_index = 0;
+	end = delay_samples-2;
+	full = false;
 	buffer = new std::vector<double>(number_of_samples, 0.0);
 }
 
@@ -14,10 +17,19 @@ DelayBlock::~DelayBlock()
 
 double DelayBlock::process(const double &input_sample) 
 {
-	double output{(*buffer)[delay_samples-1]};
-	buffer->pop_back();
-	buffer->insert(buffer->begin(), input_sample);
-    previous_output = output;
+	
+
+	double output{0};
+	output = (full)? (*buffer)[current_index] : 0.0;
+	(*buffer)[current_index] = input_sample;
+	if(!full)
+	{
+		full = (current_index == end)? true : false;
+	}
+
+	current_index = (current_index == end)? 0 : current_index+1;
+
+	previous_output = output;
 	return output;
 }
 DelayBlock::DelayBlock()
