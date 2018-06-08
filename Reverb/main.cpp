@@ -6,7 +6,6 @@
 #include "WaveFileWrapper.h"
 #include "AllpassReverbSeries.h"
 #include "CombReverbParallel.h"
-#include "DelayBlock.h"
 
 #include "TestUtilities.h"
 
@@ -20,16 +19,21 @@ int main()
     SoundData *samples = wav.getSoundData();  
 
     ///
-     AllpassReverbSeries blocks = AllpassReverbSeries();
     int second = samples->sample_rate;
-    blocks.addBlock(second/2, 0.9);
-    blocks.addBlock(second/4, 0.7);
-    blocks.addBlock(second/8, 0.5);
-    blocks.addBlock(second/16, 0.3); 
+    AllpassReverbBlock blocks = AllpassReverbBlock(second/10, 0.7);
+    //DelayBlock blocks(second);
+    //blocks.addBlock(second/2, 0.9);
+    //blocks.addBlock(second/3, 0.7);
+    //blocks.addBlock(second/4, 0.7);
+    //blocks.addBlock(second/5, 0.5);
+    //blocks.addBlock(second/8, 0.5);
+    //blocks.addBlock(second/16, 0.3);
+    //blocks.addBlock(second/24, 0.2);
+    //blocks.addBlock(second/32, 0.15); 
     
      for(auto& sample: samples->left_channel)
     {
-        sample = blocks.process(sample);
+        sample += blocks.process(sample);
     } 
 
     ///

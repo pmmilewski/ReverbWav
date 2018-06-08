@@ -1,6 +1,7 @@
 #include "WaveFileWrapper.h"
 #include <bitset>
 #include <cmath>
+#include <algorithm>
 
 
 void WaveFileWrapper::readFile(const char* filename)
@@ -99,35 +100,64 @@ SoundData* WaveFileWrapper::getSoundData()
         
 }
 
-void WaveFileWrapper::loadSoudData(const SoundData& sdata)
+void WaveFileWrapper::loadSoudData(SoundData& sdata)
 {
     switch(number_of_channels)
     {
         case 1:
         {
-            if(bps == 8)
+            auto *left = &sdata.left_channel;
+            auto *right = &sdata.right_channel;
+
+            auto l_minmax = std::minmax_element(left->begin(), left->end());
+            auto l_min = *l_minmax.first;
+            auto l_max = *l_minmax.second;
+
+            if (bps == 8)
             {
-               delete static_cast<std::vector<uint8_t>*>(wave->data);
-               wave->data = new std::vector<uint8_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                delete static_cast<std::vector<uint8_t>*>(wave->data);
+                
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (s - l_min)/(l_max - l_min)*UINT8_MAX;});
+                
+                wave->data = new std::vector<uint8_t>(left->begin(), left->end());
             }
-            if(bps == 16)
+            if (bps == 16)
             {
-                delete static_cast<std::vector<int16_t>*>(wave->data);
-                wave->data = new std::vector<int16_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                delete static_cast<std::vector<int16_t> *>(wave->data);
+
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT16_MAX;});
+
+                wave->data = new std::vector<int16_t>(left->begin(), left->end());
             }
-            if(bps == 24)
+            if (bps == 24)
             {
                 //TODO
             }
-            if(bps == 32)
+            if (bps == 32)
             {
-                delete static_cast<std::vector<int32_t>*>(wave->data);
-                wave->data = new std::vector<int32_t>(sdata.left_channel.begin(), sdata.left_channel.end());
+                delete static_cast<std::vector<int32_t> *>(wave->data);
+
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT32_MAX;});
+
+                wave->data = new std::vector<int32_t>(left->begin(), left->end());
             }
             break;
         }
         case 2:
         {
+            auto *left = &sdata.left_channel;
+            auto *right = &sdata.right_channel;
+
+            auto l_minmax = std::minmax_element(left->begin(), left->end());
+            auto l_min = *l_minmax.first;
+            auto l_max = *l_minmax.second;
+
+            auto r_minmax = std::minmax_element(right->begin(), right->end());
+            auto r_min = *r_minmax.first;
+            auto r_max = *r_minmax.first;
             //TODO
             std::cout << "Not yet implemented - getSound stereo" << std::endl;
             break;

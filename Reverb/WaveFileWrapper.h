@@ -1,6 +1,7 @@
 #pragma once
 
 #include "FileUtilities.h"
+#include <cstdint>
 #include <iostream>
 
 struct SoundData
@@ -22,7 +23,7 @@ public:
     void finishWork(const char*);
     
     SoundData* getSoundData();
-    void loadSoudData(const SoundData&);
+    void loadSoudData(SoundData&);
     
     WaveFileWrapper constructWavFromSoundData(const SoundData&); 
     
