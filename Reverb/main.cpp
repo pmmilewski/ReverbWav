@@ -17,8 +17,8 @@ int main()
 	///	
 	
 	auto start = std::chrono::system_clock::now();
-    SoundData *samples = wav.getSoundData();
-    
+    SoundData *samples = wav.getSoundData();  
+
     ///
      AllpassReverbSeries blocks = AllpassReverbSeries();
     int second = samples->sample_rate;

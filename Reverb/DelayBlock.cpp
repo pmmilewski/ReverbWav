@@ -5,7 +5,7 @@ DelayBlock::DelayBlock(const int &number_of_samples)
 {	
 	delay_samples = number_of_samples;
 	current_index = 0;
-	end = delay_samples-2;
+	end = delay_samples-1;
 	full = false;
 	buffer = new std::vector<double>(number_of_samples, 0.0);
 }
