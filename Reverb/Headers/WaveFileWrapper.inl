@@ -22,7 +22,7 @@
                 auto sample{0};
                 while (sample < wave->header.Subchunk2Size)
                 {
-                    fs.seekg(sizeof(WaveHeader)+sample);
+                    fs.seekg(sizeof(wave->header)+sample);
                     fs.read(reinterpret_cast<char*>(&byte), 1);
                     data->push_back(byte);
                     sample++;
@@ -36,7 +36,7 @@
                 auto sample{0};
                 while (sample < wave->header.Subchunk2Size/2)
                 {
-                    fs.seekg(sizeof(WaveHeader)+(sample*2));
+                    fs.seekg(sizeof(wave->header)+(sample*2));
                     data->push_back(readS16(fs));
                     sample++;
                 }
@@ -54,7 +54,7 @@
                 auto sample{0};
                 while (sample < wave->header.Subchunk2Size/4)
                 {
-                    fs.seekg(sizeof(WaveHeader)+(sample*4));
+                    fs.seekg(sizeof(wave->header)+(sample*4));
                     data->push_back(readS32(fs));
                     sample++;
                 }

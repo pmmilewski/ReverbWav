@@ -1,18 +1,12 @@
 // Building reverb project from scratch. Will be working on .wav files for now.
 
-#include <iostream>
-#include <chrono>
-#include <cstdint>
-#include "WaveFileWrapper.h"
-#include "AllpassReverbSeries.h"
-#include "CombReverbParallel.h"
-
-#include "TestUtilities.h"
+#include "Test.h"
 
 int main()
 {
-    
-    WaveFileWrapper wav = WaveFileWrapper("singing.wav");
+    runFileTest();
+    runDelayTest();
+    /* WaveFileWrapper wav = WaveFileWrapper("singing.wav");
 	///	
 	
 	auto start = std::chrono::system_clock::now();
@@ -43,7 +37,7 @@ int main()
 	///
 	wav.finishWork("out.wav");
 	std::cout << "Finished! Time elapsed: " << elapsed_seconds.count() << std::endl;
-	std::getchar();
+	std::getchar(); */
 
 	return 0;
 }

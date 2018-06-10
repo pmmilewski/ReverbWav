@@ -41,6 +41,7 @@ private:
         int32_t ByteRate; //little
         int16_t BlockAlign; //little
         int16_t BitsPerSample; //little
+        std::vector<uint8_t> *ExtraData;
         uint8_t Subchunk2ID[4]; //big
         int32_t Subchunk2Size; //little
     };

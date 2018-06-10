@@ -9,7 +9,21 @@ void WaveFileWrapper::readFile(const char* filename)
 	std::ifstream fs;
 	wave = new WaveFile;
 	fs.open(filename, std::ios_base::binary);
-	fs.get(reinterpret_cast<char*>(&wave->header), sizeof(WaveHeader));
+    fs.read(reinterpret_cast<char*>(&wave->header), 36);
+
+    wave->header.ExtraData = new std::vector<uint8_t>;
+    uint8_t byte;
+    int32_t header_byte_number{36};
+    while (header_byte_number < wave->header.Subchunk1Size+20)
+    {
+        fs.seekg(header_byte_number);
+        fs.read(reinterpret_cast<char *>(&byte), 1);
+        wave->header.ExtraData->push_back(byte);
+        header_byte_number++;
+    }
+    fs.seekg(header_byte_number);
+    fs.read(reinterpret_cast<char*>(&wave->header.Subchunk2ID), 8);
+
     bps = static_cast<int>(wave->header.BitsPerSample);
     if(bps == 8)
         readSamplesFromFile<8>(fs);
@@ -26,8 +40,16 @@ void WaveFileWrapper::writeFile(const char* filename)
 {
 	std::ofstream fs;
 	fs.open(filename, std::ios_base::binary);
-	fs.write((char*)wave, sizeof(WaveHeader));
-    
+	//fs.write((char*)wave, sizeof(wave->header));
+    fs.write(reinterpret_cast<char*>(&wave->header), 36);
+    int header_byte_number{36};
+    for(auto& byte: *wave->header.ExtraData)
+    {
+        fs.write(reinterpret_cast<char*>(&byte), 1);
+        header_byte_number++;
+    }
+    fs.write(reinterpret_cast<char*>(&wave->header.Subchunk2ID), 8);
+
     if(bps == 8)
         writeSamplesToFile<8>(fs);
     if(bps == 16)
@@ -102,7 +124,13 @@ SoundData* WaveFileWrapper::getSoundData()
             if(bps == 16)
             {
                 auto* data = (std::vector<int16_t>*)wave->data;
-                sdata->left_channel = std::vector<double>(data->begin(), data->end());
+                size_t data_size = data->size();
+
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    (i%2 == 0)? 
+                    sdata->left_channel.push_back((*data)[i]) : sdata->right_channel.push_back((*data)[i]);
+                }
             }
             if(bps == 24)
             {
@@ -111,9 +139,14 @@ SoundData* WaveFileWrapper::getSoundData()
             if(bps == 32)
             {
                 auto* data = (std::vector<int32_t>*)wave->data;
-                sdata->left_channel = std::vector<double>(data->begin(), data->end());
+                size_t data_size = data->size();
+                
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    (i%2 == 0)? 
+                    sdata->left_channel.push_back((*data)[i]) : sdata->right_channel.push_back((*data)[i]);
+                }
             }
-            break;
             break;
         }
         default:
@@ -165,8 +198,8 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
             {
                 delete static_cast<std::vector<int32_t> *>(wave->data);
 
-                std::transform(left->begin(), left->end(), left->begin(),
-                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT32_MAX;});
+                /* std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT32_MAX;}); */
 
                 wave->data = new std::vector<int32_t>(left->begin(), left->end());
             }
@@ -174,8 +207,10 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
         }
         case 2:
         {
+            
             auto *left = &sdata.left_channel;
             auto *right = &sdata.right_channel;
+            
 
             auto l_minmax = std::minmax_element(left->begin(), left->end());
             auto l_min = *l_minmax.first;
@@ -183,9 +218,76 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
 
             auto r_minmax = std::minmax_element(right->begin(), right->end());
             auto r_min = *r_minmax.first;
-            auto r_max = *r_minmax.first;
-            //TODO
-            std::cout << "Not yet implemented - getSound stereo" << std::endl;
+            auto r_max = *r_minmax.second;
+            
+            if (bps == 8)
+            {
+                auto* data = static_cast<std::vector<uint8_t>*>(wave->data);
+                delete data;
+                size_t data_size = left->size();
+
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (s - l_min)/(l_max - l_min)*UINT8_MAX;});
+
+                 std::transform(right->begin(), right->end(), right->begin(),
+                [&r_max, &r_min](double s) -> double {return (s - r_min)/(r_max - r_min)*UINT8_MAX;});
+                
+                wave->data = new std::vector<uint8_t>;
+                data = static_cast<std::vector<uint8_t>*>(wave->data);
+                
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    data->push_back((*left)[i]);
+                    data->push_back((*right)[i]);
+                }
+                
+            }
+            if (bps == 16)
+            {
+                auto* data = static_cast<std::vector<int16_t>*>(wave->data);
+                delete data;
+                size_t data_size = left->size();
+
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (s - l_min)/(l_max - l_min)*INT16_MAX;});
+
+                 std::transform(right->begin(), right->end(), right->begin(),
+                [&r_max, &r_min](double s) -> double {return (s - r_min)/(r_max - r_min)*INT16_MAX;});
+                
+                wave->data = new std::vector<int16_t>;
+                data = static_cast<std::vector<int16_t>*>(wave->data);
+                
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    data->push_back((*left)[i]);
+                    data->push_back((*right)[i]);
+                }
+            }
+            if (bps == 24)
+            {
+                //TODO
+            }
+            if (bps == 32)
+            {
+                auto* data = static_cast<std::vector<int32_t>*>(wave->data);
+                delete data;
+                size_t data_size = left->size();
+
+               /*  std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (s - l_min)/(l_max - l_min)*INT32_MAX;});
+
+                 std::transform(right->begin(), right->end(), right->begin(),
+                [&r_max, &r_min](double s) -> double {return (s - r_min)/(r_max - r_min)*INT32_MAX;}); */
+                
+                wave->data = new std::vector<int32_t>;
+                data = static_cast<std::vector<int32_t>*>(wave->data);
+                
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    data->push_back((*left)[i]);
+                    data->push_back((*right)[i]);
+                }
+            }
             break;
         }
         default:
