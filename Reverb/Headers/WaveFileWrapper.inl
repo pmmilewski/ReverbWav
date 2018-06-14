@@ -45,7 +45,15 @@
             }
             case 24:
             {
-                std::cout << "24-bit not yet implemented" << std::endl;
+                auto *data = new std::vector<int24_t>(0);
+                auto sample{0};
+                while (sample < wave->header.Subchunk2Size/3)
+                {
+                    fs.seekg(sizeof(wave->header)+(sample*3));
+                    data->push_back(readS24(fs));
+                    sample++;
+                }
+                wave->data = data;
                 break;
             }
             case 32:
@@ -95,7 +103,12 @@
             }
             case 24:
             {
-                std::cout << "24-bit not yet implemented" << std::endl;
+                auto* data = (std::vector<int24_t>*)wave->data;
+                while (sample < wave->header.Subchunk2Size / 3)
+                {
+                    writeS24(fs, (*data)[sample]);
+                    sample++;
+                }
                 break;
             }
             case 32:

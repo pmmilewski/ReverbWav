@@ -97,7 +97,8 @@ SoundData* WaveFileWrapper::getSoundData()
             }
             if(bps == 24)
             {
-                //TODO
+                auto* data = (std::vector<int24_t>*)wave->data;
+                sdata->left_channel = std::vector<double>(data->begin(), data->end());
             }
             if(bps == 32)
             {
@@ -118,8 +119,6 @@ SoundData* WaveFileWrapper::getSoundData()
                     (i%2 == 0)? 
                     sdata->left_channel.push_back((*data)[i]) : sdata->right_channel.push_back((*data)[i]);
                 }
-                
-                
             }
             if(bps == 16)
             {
@@ -134,7 +133,13 @@ SoundData* WaveFileWrapper::getSoundData()
             }
             if(bps == 24)
             {
-                //TODO
+                auto* data = (std::vector<int24_t>*)wave->data;
+                size_t data_size = data->size();
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    (i%2 == 0)? 
+                    sdata->left_channel.push_back((*data)[i]) : sdata->right_channel.push_back((*data)[i]);
+                }
             }
             if(bps == 32)
             {
@@ -192,14 +197,19 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
             }
             if (bps == 24)
             {
-                //TODO
+                delete static_cast<std::vector<int24_t> *>(wave->data);
+
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT24_MAX;});
+
+                wave->data = new std::vector<int24_t>(left->begin(), left->end());
             }
             if (bps == 32)
             {
                 delete static_cast<std::vector<int32_t> *>(wave->data);
 
-                /* std::transform(left->begin(), left->end(), left->begin(),
-                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT32_MAX;}); */
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT32_MAX;});
 
                 wave->data = new std::vector<int32_t>(left->begin(), left->end());
             }
@@ -249,10 +259,10 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
                 size_t data_size = left->size();
 
                 std::transform(left->begin(), left->end(), left->begin(),
-                [&l_max, &l_min](double s) -> double {return (s - l_min)/(l_max - l_min)*INT16_MAX;});
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT16_MAX;});
 
                  std::transform(right->begin(), right->end(), right->begin(),
-                [&r_max, &r_min](double s) -> double {return (s - r_min)/(r_max - r_min)*INT16_MAX;});
+                [&r_max, &r_min](double s) -> double {return (((s - r_min)/(r_max - r_min)*2.0)-1.0)*INT16_MAX;});
                 
                 wave->data = new std::vector<int16_t>;
                 data = static_cast<std::vector<int16_t>*>(wave->data);
@@ -265,7 +275,24 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
             }
             if (bps == 24)
             {
-                //TODO
+                auto* data = static_cast<std::vector<int24_t>*>(wave->data);
+                delete data;
+                size_t data_size = left->size();
+
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT24_MAX;});
+
+                 std::transform(right->begin(), right->end(), right->begin(),
+                [&r_max, &r_min](double s) -> double {return (((s - r_min)/(r_max - r_min)*2.0)-1.0)*INT24_MAX;});
+                
+                wave->data = new std::vector<int24_t>;
+                data = static_cast<std::vector<int24_t>*>(wave->data);
+                
+                for(size_t i = 0; i < data_size; i++)
+                {
+                    data->push_back(int24_t((*left)[i]));
+                    data->push_back(int24_t((*right)[i]));
+                }
             }
             if (bps == 32)
             {
@@ -273,11 +300,11 @@ void WaveFileWrapper::loadSoudData(SoundData& sdata)
                 delete data;
                 size_t data_size = left->size();
 
-               /*  std::transform(left->begin(), left->end(), left->begin(),
-                [&l_max, &l_min](double s) -> double {return (s - l_min)/(l_max - l_min)*INT32_MAX;});
+                std::transform(left->begin(), left->end(), left->begin(),
+                [&l_max, &l_min](double s) -> double {return (((s - l_min)/(l_max - l_min)*2.0)-1.0)*INT32_MAX;});
 
-                 std::transform(right->begin(), right->end(), right->begin(),
-                [&r_max, &r_min](double s) -> double {return (s - r_min)/(r_max - r_min)*INT32_MAX;}); */
+                std::transform(right->begin(), right->end(), right->begin(),
+                [&r_max, &r_min](double s) -> double {return (((s - r_min)/(r_max - r_min)*2.0)-1.0)*INT32_MAX;});
                 
                 wave->data = new std::vector<int32_t>;
                 data = static_cast<std::vector<int32_t>*>(wave->data);
